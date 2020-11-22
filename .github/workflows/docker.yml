@@ -1,0 +1,25 @@
+name: Build and push Docker images
+
+on:
+  push:
+    branches: [ master ]
+    tags: [ '*' ]
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build and push nightly Docker image
+      uses: docker/build-push-action@v1.1.0
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        repository: superfola/simplehttpserver
+        dockerfile: Dockerfile
+        # tag with the git commit SHA
+        tag_with_sha: true
+        tags: latest
