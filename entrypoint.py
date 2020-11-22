@@ -9,7 +9,7 @@ PORT = 8080
 f = open('./logs', 'w+')
 
 def log(*args):
-    print >> f, args
+    print >> f, ' '.join(args)
     f.flush()
 
 
@@ -18,14 +18,13 @@ class RequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         SimpleHTTPServer.SimpleHTTPRequestHandler.__init__(self, request, client_addr, server)
 
     def block(self):
-        log("rejected")
+        log("rejected", self.client_address[0], self.request)
         self.send_response(403)
         self.end_headers()
         self.wfile.write("No.")
 
     def do_GET(self):
         parsed = urlparse.urlparse(self.path)
-        log(parsed)
         forbidden = (
             "?", "&", ".php", "wp-content", ".git", "vendor", "console",
             "http", "owa",
