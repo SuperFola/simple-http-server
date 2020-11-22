@@ -9,7 +9,7 @@ PORT = 8080
 f = open('./logs', 'w+')
 
 def log(*args):
-    print >> f, ' '.join(args)
+    print >> f, ' '.join(str(a) for a in args)
     f.flush()
 
 
