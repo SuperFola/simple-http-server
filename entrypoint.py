@@ -22,6 +22,7 @@ class RequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urlparse.urlparse(self.path)
+        print parsed
         if "?" in parsed or "&" in parsed:
             self.block()
         else:
