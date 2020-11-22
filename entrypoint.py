@@ -8,24 +8,29 @@ import urlparse
 PORT = 8080
 f = open('./logs', 'w+')
 
+def log(*args):
+    print >> f, args
+    f.flush()
+
+
 class RequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def __init__(self, request, client_addr, server):
         SimpleHTTPServer.SimpleHTTPRequestHandler.__init__(self, request, client_addr, server)
 
     def block(self):
-        print >> f, "rejected"
+        log("rejected")
         self.send_response(403)
         self.end_headers()
         self.wfile.write("No.")
 
     def do_GET(self):
         parsed = urlparse.urlparse(self.path)
-        print >> f, parsed
+        log(parsed)
         forbidden = (
             "?", "&", ".php", "wp-content", ".git", "vendor", "console",
             "http", "owa",
         )
-        if any(s in parsed for s in forbidden):
+        if parsed.query != '' or parsed.params != '' or any(s in parsed.path for s in forbidden):
             self.block()
         else:
             SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
@@ -37,5 +42,5 @@ class RequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 handler = RequestHandler
 httpd = SocketServer.TCPServer(('', PORT), handler)
 
-print >> f, "serving at port", PORT
+log("serving at port", PORT)
 httpd.serve_forever()
